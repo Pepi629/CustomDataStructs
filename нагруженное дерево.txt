@@ -1,0 +1,152 @@
+class WeightedTreeNode:
+    def __init__(self, value, weight):
+        # Инициализация узла с заданными значением и весом.
+        self.value = value
+        self.weight = weight
+        self.parent = None  # Родительский узел
+        self.children = []  # Список дочерних узлов
+
+    def add_child(self, node):
+        # Добавление дочернего узла
+        node.parent = self
+        self.children.append(node)
+
+    def add_child_at_index(self, index, node):
+        # Добавление дочернего узла в указанную позицию
+        if 0 <= index <= len(self.children):
+            node.parent = self
+            self.children.insert(index, node)
+
+    def add_child_front(self, node):
+        # Добавление дочернего узла в начало списка детей
+        self.add_child_at_index(0, node)
+
+    def add_child_back(self, node):
+        # Добавление дочернего узла в конец списка детей
+        self.add_child(node)
+
+    def remove_child(self, node):
+        # Удаление дочернего узла
+        if node in self.children:
+            self.children.remove(node)
+            node.parent = None
+
+    def update_node(self, new_value=None, new_weight=None):
+        # Обновление значения и/или веса узла
+        if new_value is not None:
+            self.value = new_value
+        if new_weight is not None:
+            self.weight = new_weight
+
+    def merge_with(self, other):
+        # Слияние двух узлов, добавление детей и суммирование весов
+        self.weight += other.weight
+        for child in other.children:
+            self.add_child(child)
+
+    def linear_search(self, value):
+        # Линейный поиск узла по значению
+        if self.value == value:
+            return self
+        for child in self.children:
+            found = child.linear_search(value)
+            if found:
+                return found
+        return None
+
+    def traverse(self):
+        # Префиксный обход дерева для вывода информации о всех узлах
+        print(f"Node Value: {self.value}, Weight: {self.weight}")
+        for child in self.children:
+            child.traverse()
+
+    def sort_children(self):
+        # Сортировка дочерних узлов по значению
+        self.children.sort(key=lambda x: x.value)
+
+    def iterate_once(self):
+        # Однократный обход дерева с выводом всех узлов
+        return [node for node in self._iter_nodes()]
+
+    def iterate_repeatedly(self, times):
+        # Многократный обход дерева заданное количество раз
+        result = []
+        for _ in range(times):
+            result.extend(self.iterate_once())
+        return result
+
+    def _iter_nodes(self):
+        # Вспомогательный генератор для обхода всех узлов дерева
+        yield self
+        for child in self.children:
+            yield from child._iter_nodes()
+
+    # Дополнительные функции
+    def count_nodes(self):
+        # Подсчет общего количества узлов в поддереве
+        return 1 + sum(child.count_nodes() for child in self.children)
+
+    def find_path(self, value):
+        # Поиск пути до узла с заданным значением
+        path = []
+        if self._find_path(value, path):
+            return path
+        return None
+
+    def _find_path(self, value, path):
+        # Вспомогательная функция для поиска пути
+        path.append(self)
+        if self.value == value:
+            return True
+        for child in self.children:
+            if child._find_path(value, path):
+                return True
+        path.pop()
+        return False
+
+
+# Создаем корневой узел
+root = WeightedTreeNode(value='root', weight=10)
+
+# Добавляем дочерние узлы
+child1 = WeightedTreeNode(value='child1', weight=5)
+child2 = WeightedTreeNode(value='child2', weight=6)
+root.add_child_front(child1)
+root.add_child_back(child2)
+
+# Добавляем вложенный узел child1
+subchild1 = WeightedTreeNode(value='subchild1', weight=3)
+child1.add_child_back(subchild1)
+
+# Обновляем вес узла child2
+child2.update_node(new_weight=8)
+
+# Выводим информацию об узлах дерева (префиксный обход)
+print("Обход дерева:")
+root.traverse()
+
+# Линейный поиск узла по значению
+search_result = root.linear_search('subchild1')
+if search_result:
+    print(f"Найден узел: {search_result.value} с весом {search_result.weight}")
+
+# Ищем путь до узла
+path = root.find_path('subchild1')
+if path:
+    print("Путь до 'subchild1':", " -> ".join(node.value for node in path))
+
+# Сортируем дочерние узлы root по значению
+root.sort_children()
+print("Дети корневого узла после сортировки:")
+for child in root.children:
+    print(f"{child.value} (Вес: {child.weight})")
+
+# Обход дерева с повторениями
+print("Многократный обход:")
+repeated_nodes = root.iterate_repeatedly(2)
+for node in repeated_nodes:
+    print(f"{node.value} (Вес: {node.weight})")
+
+# Подсчет количества узлов в дереве
+total_nodes = root.count_nodes()
+print(f"Общее количество узлов в дереве: {total_nodes}")

@@ -1,0 +1,85 @@
+class HashTable:
+    def __init__(self, size=10):
+        self.size = size
+        self.table = [[] for _ in range(self.size)]
+
+    def _hash(self, key):
+        return hash(key) % self.size
+
+    def add(self, key, value):
+        key_hash = self._hash(key)
+        bucket = self.table[key_hash]
+        for index, (existing_key, _) in enumerate(bucket):
+            if existing_key == key:
+                bucket[index] = (key, value)  # Обновляем существующий ключ
+                return
+        bucket.append((key, value))  # Добавляем новый ключ если не найден
+
+    def get(self, key):
+        key_hash = self._hash(key)
+        bucket = self.table[key_hash]
+        for existing_key, value in bucket:
+            if existing_key == key:
+                return value
+        return None
+
+    def remove(self, key):
+        key_hash = self._hash(key)
+        bucket = self.table[key_hash]
+        self.table[key_hash] = [(k, v) for k, v in bucket if k != key]
+
+    def display(self):
+        for index, bucket in enumerate(self.table):
+            if bucket:
+                print(f"Bucket {index}: {bucket}")
+
+    def traverse(self):
+        return [(key, value) for bucket in self.table for key, value in bucket]
+
+    def update(self, key, value):
+        self.add(key, value)
+
+    def merge(self, other_hash_table):
+        for key, value in other_hash_table.traverse():
+            self.add(key, value)
+
+    def search_linear(self, value):
+        for bucket in self.table:
+            for key, val in bucket:
+                if val == value:
+                    return key, val
+        return None
+
+    def sort_buckets(self):
+        for bucket in self.table:
+            bucket.sort(key=lambda item: item[1])  # Сортируем корзины по значению
+
+# Пример использования класса HashTable
+ht = HashTable()
+ht.add('key1', 'value1')
+ht.add('key2', 'value2')
+ht.add('key3', 'value3')
+
+print("До любых операция:")
+ht.display()
+
+ht.update('key1', 'new_value1')
+ht.remove('key2')
+
+print("\nПосле обновления и удаления:")
+ht.display()
+
+ht2 = HashTable()
+ht2.add('key4', 'value4')
+ht2.add('key5', 'value5')
+ht.merge(ht2)
+
+print("\nПосле слияния другой хеш-таблицы:")
+ht.display()
+
+search_result = ht.search_linear('value3')
+print("\nРезультат линейного поиска для 'value3':", search_result)
+
+ht.sort_buckets()
+print("\nПосле сортировки  buckets:")
+ht.display()

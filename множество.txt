@@ -1,0 +1,106 @@
+class CustomSet:
+    def __init__(self):
+        # Инициализация пустого множества.
+        self.elements = []
+
+    def add_front(self, element):
+        # Добавление элемента в начало множества, если его там еще нет.
+        if element not in self.elements:
+            self.elements.insert(0, element)
+
+    def add_back(self, element):
+        # Добавление элемента в конец множества, если его там еще нет.
+        if element not in self.elements:
+            self.elements.append(element)
+
+    def add_at(self, index, element):
+        # Добавление элемента в заданное место (индекс), если его там еще нет.
+        if element not in self.elements and 0 <= index <= len(self.elements):
+            self.elements.insert(index, element)
+
+    def remove(self, element):
+        # Удаление элемента из множества, если он существует.
+        if element in self.elements:
+            self.elements.remove(element)
+
+    def update(self, element, new_element):
+        # Обновление элемента: замена на новый, если старый существует и новый отсутствует.
+        index = self.elements.index(element) if element in self.elements else -1
+        if index != -1 and new_element not in self.elements:
+            self.elements[index] = new_element
+
+    def contains(self, element):
+        # Проверка наличия элемента в множестве.
+        return element in self.elements
+
+    def union(self, another_set):
+        # Объединение текущего множества с другим. Добавление элементов из второго множества.
+        for el in another_set.elements:
+            self.add_back(el)
+
+    def intersection(self, another_set):
+        # Пересечение множеств: создается новое множество из элементов, присутствующих в обоих.
+        new_set = CustomSet()
+        for el in self.elements:
+            if another_set.contains(el):
+                new_set.add_back(el)
+        return new_set
+
+    def difference(self, another_set):
+        # Разность множеств: элементы текущего множества, не входящие в другое множество.
+        new_set = CustomSet()
+        for el in self.elements:
+            if not another_set.contains(el):
+                new_set.add_back(el)
+        return new_set
+
+    def size(self):
+        # Возвращает размер множества.
+        return len(self.elements)
+
+    def sort(self):
+        # Сортировка элементов множества.
+        self.elements = sorted(self.elements)
+
+    def iterate_once(self):
+        # Однократный обход всех элементов множества.
+        return list(self.elements)
+
+    def iterate_repeatedly(self, times):
+        # Многократный обход множества.
+        result = []
+        for _ in range(times):
+            result.extend(self.iterate_once())
+        return result
+
+    def linear_search(self, element):
+        # Линейный поиск элемента в множестве.
+        return element in self.elements
+
+    def __str__(self):
+        # Строковое представление множества.
+        return "{" + ", ".join(map(str, self.elements)) + "}"
+cs = CustomSet()
+cs.add_front(3)  # Добавляет 3 в начало множества
+cs.add_front(2)  # Добавляет 2 в начало, смещая 3 назад
+cs.add_front(1)  # Добавляет 1 в начало, смещая 2 и 3
+cs.add_back(4)   # Добавляет 4 в конец множества
+cs.add_at(1, 1.5)  # Вставляет 1.5 на позицию 1
+cs.remove(2)     # Удаляет 2 из множества
+cs.update(3, 5)  # Обновляет 3 на 5
+cs.union(CustomSet())  # Объединение с пустым множеством
+cs2 = CustomSet()
+cs2.add_back(5)
+cs2.add_back(6)
+print("Объединение:", cs.union(cs2))  # Объединение с множеством, содержащим 5 и 6
+result_inter = cs.intersection(cs2)  # Пересечение с cs2
+result_diff = cs.difference(cs2)     # Разность с cs2
+cs.sort()  # Сортировка множества
+print("Пересечение:", result_inter)
+print("Разность:", result_diff)
+print("Размер множества:", cs.size())  # Вывод размера множества
+print("Содержит ли элемент 5:", cs.contains(5))  # Проверка наличия элемента 5
+print("Полный обход множества:", cs.iterate_once())  # Однократный обход
+print("Многократный обход множества:", cs.iterate_repeatedly(2))  # Двукратный обход
+print("Линейный поиск элемента 5:", cs.linear_search(5))  # Линейный поиск 5
+print(cs)  # Вывод множества

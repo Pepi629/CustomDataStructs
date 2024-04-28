@@ -1,0 +1,84 @@
+class AdvancedQueue:
+    def __init__(self):
+        self.items = []
+
+    def enqueue(self, item):
+        # Добавление элемента в конец очереди
+        self.items.append(item)
+
+    def dequeue(self):
+        # Удаление и возврат элемента из начала очереди
+        return self.items.pop(0) if self.items else None
+
+    def enqueue_front(self, item):
+        # Добавление элемента в начало очереди (аналогично операции push_front для двусторонней очереди)
+        self.items.insert(0, item)
+
+    def insert_at(self, index, item):
+        # Добавление элемента в заданное место
+        if 0 <= index <= len(self.items):
+            self.items.insert(index, item)
+
+    def update_item(self, index, new_item):
+        # Обновление элемента по индексу
+        if 0 <= index < len(self.items):
+            self.items[index] = new_item
+
+    def remove_item(self, index):
+        # Удаление элемента по индексу
+        if 0 <= index < len(self.items):
+            del self.items[index]
+
+    def traverse(self):
+        # Разовый обход очереди
+        return list(self.items)
+
+    def traverse_repeatedly(self, times):
+        # Многократный обход очереди
+        result = []
+        for _ in range(times):
+            result.extend(self.traverse())
+        return result
+
+    def merge(self, other):
+        # Слияние с другой очередью
+        self.items.extend(other.items)
+
+    def linear_search(self, item):
+        # Линейный поиск элемента
+        return item in self.items
+
+    def sort(self):
+        # Сортировка элементов очереди
+        self.items.sort()
+
+    def is_empty(self):
+        # Проверка, пуста ли очередь
+        return len(self.items) == 0
+
+    def size(self):
+        # Получение размера очереди
+        return len(self.items)
+
+# Пример использования AdvancedQueue
+queue = AdvancedQueue()
+queue.enqueue(10)
+queue.enqueue(20)
+queue.enqueue_front(5)
+queue.insert_at(1, 15)
+queue.update_item(2, 25)
+queue.remove_item(0)
+
+print("Очередь после всех операций:", queue.traverse())
+print("Размер очереди:", queue.size())
+print("Многократный обход очереди:", queue.traverse_repeatedly(2))
+
+other_queue = AdvancedQueue()
+other_queue.enqueue(30)
+other_queue.enqueue(40)
+queue.merge(other_queue)
+
+print("Очередь после слияния:", queue.traverse())
+print("Элемент '25' найден:", queue.linear_search(25))
+queue.sort()
+print("Отсортированная очередь:", queue.traverse())

@@ -1,0 +1,46 @@
+class DynamicMultiDimensionalArray:
+    def __init__(self, *dimensions):
+        # Инициализация многомерного массива с заданными размерностями
+        self.dimensions = dimensions
+        self.array = self._create_array(list(dimensions))
+
+    def _create_array(self, dimensions):
+        # Рекурсивный метод для создания многомерного массива
+        if len(dimensions) == 1:
+            return [None] * dimensions[0]
+        return [self._create_array(dimensions[1:]) for _ in range(dimensions[0])]
+
+    def set_value(self, indices, value):
+        # Установка значения в многомерном массиве по кортежу индексов
+        if len(indices) != len(self.dimensions):
+            raise ValueError("Количество индексов должно соответствовать количеству измерений..")
+
+        # Получаем доступ к нужной ячейке для установки значения
+        target = self.array
+        for i in indices[:-1]:
+            target = target[i]
+        target[indices[-1]] = value
+
+    def get_value(self, indices):
+        # Получение значения из многомерного массива по кортежу индексов
+        target = self.array
+        for i in indices:
+            target = target[i]
+        return target
+
+    def display(self):
+        # Простая функция отображения для двумерного массива
+        if len(self.dimensions) == 2:
+            for row in self.array:
+                print(row)
+        else:
+            print("Эта функция отображения реализована только для 2D-массивов..")
+
+
+# Пример создания и использования класса DynamicMultiDimensionalArray
+md_array = DynamicMultiDimensionalArray(3, 3)  # Создаем 3x3 массив
+md_array.set_value((0, 0), 5)  # Устанавливаем значение 5 в позицию (0, 0)
+md_array.set_value((1, 1), 10)  # Устанавливаем значение 10 в позицию (1, 1)
+
+print("Начальный массив:")
+md_array.display()

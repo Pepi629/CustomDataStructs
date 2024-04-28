@@ -1,0 +1,78 @@
+class MyList:
+    def __init__(self):
+        self.data = []  # Инициализация пустого списка
+
+    def append(self, item):
+        self.data.append(item)  # Добавление элемента в конец списка
+
+    def insert(self, index, item):
+        self.data.insert(index, item)  # Вставка элемента на указанную позицию
+
+    def remove(self, item):
+        self.data.remove(item)  # Удаление первого вхождения элемента
+
+    def pop(self, index=-1):
+        return self.data.pop(index)  # Удаление элемента по индексу и возврат его значения
+
+    def clear(self):
+        self.data = []  # Очистка списка
+
+    def __getitem__(self, index):
+        return self.data[index]  # Получение элемента по индексу
+
+    def __setitem__(self, index, value):
+        self.data[index] = value  # Установка значения элемента по индексу
+
+    def __delitem__(self, index):
+        del self.data[index]  # Удаление элемента по индексу
+
+    def find(self, item):
+        # Линейный поиск элемента в списке
+        for i, value in enumerate(self.data):
+            if value == item:
+                return i
+        return -1
+
+    def sort(self):
+        # Сортировка списка методом пузырька
+        n = len(self.data)
+        for i in range(n):
+            for j in range(0, n-i-1):
+                if self.data[j] > self.data[j+1]:
+                    self.data[j], self.data[j+1] = self.data[j+1], self.data[j]
+
+    def merge(self, other):
+        self.data.extend(other.data)  # Объединение двух списков
+        self.sort()  # Сортировка после объединения
+
+    def __iter__(self):
+        self.index = 0
+        return self
+
+    def __next__(self):
+        if self.index < len(self.data):
+            result = self.data[self.index]
+            self.index += 1
+            return result
+        else:
+            raise StopIteration
+
+
+#Проверка
+
+
+my_list = MyList()
+my_list.append(10)
+my_list.append(20)
+my_list.insert(1, 15)
+print(my_list.data)  # Вывод: [10, 15, 20]
+
+item = my_list.pop(1)
+print("Popped item:", item)  # Вывод: Popped item: 15
+print(my_list.data)  # Вывод: [10, 20]
+
+my_list[0] = 5
+print(my_list.data)  # Вывод: [5, 20]
+
+my_list.sort()
+print("Sorted list:", my_list.data)  # Вывод: Sorted list: [5, 20]

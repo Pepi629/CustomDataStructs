@@ -1,0 +1,84 @@
+class AdvancedStack:
+    def __init__(self):
+        self.items = []
+
+    def push(self, item):
+        # Добавление элемента в конец (верх стека)
+        self.items.append(item)
+
+    def pop(self):
+        # Удаление и возврат верхнего элемента стека
+        return self.items.pop() if self.items else None
+
+    def push_front(self, item):
+        # Добавление элемента в начало стека (нехарактерно для стека)
+        self.items.insert(0, item)
+
+    def insert_at(self, index, item):
+        # Добавление элемента в заданное место (нехарактерно для стека)
+        if 0 <= index <= len(self.items):
+            self.items.insert(index, item)
+
+    def update_item(self, index, new_item):
+        # Обновление элемента по индексу (нехарактерно для стека)
+        if 0 <= index < len(self.items):
+            self.items[index] = new_item
+
+    def remove_item(self, index):
+        # Удаление элемента по индексу (нехарактерно для стека)
+        if 0 <= index < len(self.items):
+            del self.items[index]
+
+    def traverse(self):
+        # Разовый обход стека (от верха к дну)
+        return self.items[::-1]
+
+    def traverse_repeatedly(self, times):
+        # Многократный обход стека
+        result = []
+        for _ in range(times):
+            result.extend(self.traverse())
+        return result
+
+    def merge(self, other):
+        # Слияние с другим стеком
+        self.items.extend(other.items)
+
+    def linear_search(self, item):
+        # Линейный поиск элемента
+        return item in self.items
+
+    def sort(self):
+        # Сортировка стека
+        self.items.sort()
+
+    def is_empty(self):
+        # Проверка, пуст ли стек
+        return len(self.items) == 0
+
+    def size(self):
+        # Получение размера стека
+        return len(self.items)
+
+# Пример использования AdvancedStack
+stack = AdvancedStack()
+stack.push(10)
+stack.push(20)
+stack.push_front(5)
+stack.insert_at(1, 15)
+stack.update_item(2, 25)
+stack.remove_item(0)
+
+print("Стек после всех операций:", stack.traverse())
+print("Размер стека:", stack.size())
+print("Многократный обход стека:", stack.traverse_repeatedly(2))
+
+other_stack = AdvancedStack()
+other_stack.push(30)
+other_stack.push(40)
+stack.merge(other_stack)
+
+print("Стек после слияния:", stack.traverse())
+print("Элемент '25' найден:", stack.linear_search(25))
+stack.sort()
+print("Отсортированный стек:", stack.traverse())

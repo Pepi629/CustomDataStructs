@@ -1,0 +1,125 @@
+class TreeNode:
+    def __init__(self, key):
+        self.left = None
+        self.right = None
+        self.val = key  # Сохраняем значение в исходном формате
+
+class BinarySearchTree:
+    def __init__(self):
+        self.root = None
+
+    def insert(self, key):
+        # Проверка на допустимые типы данных
+        if not isinstance(key, (int, float, str)):
+            raise ValueError("Key must be an integer, float, or character")
+        # Для символов проверяем длину строки
+        if isinstance(key, str) and len(key) != 1:
+            raise ValueError("Only single characters are allowed for string keys")
+        # Начинаем вставку
+        if self.root is None:
+            self.root = TreeNode(key)
+        else:
+            self._insert_recursive(self.root, key)
+
+    def _insert_recursive(self, current_node, key):
+        if str(key) < str(current_node.val):  # Преобразование ключа и текущего значения в строки для сравнения
+            if current_node.left is None:
+                current_node.left = TreeNode(key)
+            else:
+                self._insert_recursive(current_node.left, key)
+        elif str(key) > str(current_node.val):
+            if current_node.right is None:
+                current_node.right = TreeNode(key)
+            else:
+                self._insert_recursive(current_node.right, key)
+        # Если ключ уже существует, не добавляем его
+
+    def delete(self, key):
+        self.root = self._delete_recursive(self.root, key)
+
+    def _delete_recursive(self, current_node, key):
+        if current_node is None:
+            return None
+        # Сравниваем ключи как строки
+        if str(key) < str(current_node.val):
+            current_node.left = self._delete_recursive(current_node.left, key)
+        elif str(key) > str(current_node.val):
+            current_node.right = self._delete_recursive(current_node.right, key)
+        else:
+            # Узел с ключом найден, выполняем удаление
+            if current_node.left is None:
+                return current_node.right
+            elif current_node.right is None:
+                return current_node.left
+            # У узла есть оба потомка, находим преемника
+            min_larger_node = self._find_min(current_node.right)
+            current_node.val = min_larger_node.val  # Переносим значение преемника
+            current_node.right = self._delete_recursive(current_node.right, min_larger_node.val)
+        return current_node
+
+    def _find_min(self, node):
+        while node.left is not None:
+            node = node.left
+        return node
+
+    def search(self, key):
+        return self._search_recursive(self.root, key)
+
+    def _search_recursive(self, current_node, key):
+        if current_node is None:
+            return False
+        # Сравниваем ключи как строки
+        if str(key) == str(current_node.val):
+            return True
+        elif str(key) < str(current_node.val):
+            return self._search_recursive(current_node.left, key)
+        else:
+            return self._search_recursive(current_node.right, key)
+
+    def inorder_traversal(self):
+        return self._inorder_traversal_recursive(self.root)
+
+    def _inorder_traversal_recursive(self, current_node):
+        nodes = []
+        if current_node:
+            nodes += self._inorder_traversal_recursive(current_node.left)
+            nodes.append(current_node.val)  # Сохраняем исходное значение
+            nodes += self._inorder_traversal_recursive(current_node.right)
+        return nodes
+
+    def repeated_traversal(self, count):
+        all_traversals = []
+        for _ in range(count):
+            traversal = self.inorder_traversal()
+            all_traversals.append(traversal)
+        return all_traversals
+
+    def merge(self, other_tree):
+        elements = other_tree.inorder_traversal()
+        for element in elements:
+            self.insert(element)
+
+    def __str__(self):
+        return "Binary Search Tree with elements: " + str(self.inorder_traversal())
+
+# Пример использования
+if __name__ == "__main__":
+    bst = BinarySearchTree()
+    bst.insert(8)
+    bst.insert(3)
+    bst.insert(10)
+    bst.insert(1)
+    bst.insert(6)
+    bst.insert(14)
+    bst.insert('a')  # Вставляем символ
+    bst.insert(7)
+    bst.insert(13)
+
+    print("Inorder Traversal of BST:", bst.inorder_traversal())
+    print("Search for 'a' in BST:", bst.search('a'))
+    print("Search for 15 in BST:", bst.search(15))
+
+    bst.delete('a')
+    print("Inorder Traversal after deleting 'a':", bst.inorder_traversal())
+
+    print("Repeated traversal (2 times):", bst.repeated_traversal(2))

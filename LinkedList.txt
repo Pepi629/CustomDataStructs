@@ -1,0 +1,102 @@
+class Node:
+    def __init__(self, value=None):
+        self.value = value  # Значение узла
+        self.next = None    # Ссылка на следующий узел в списке
+
+class LinkedList:
+    def __init__(self):
+        self.head = None  # Инициализация связного списка без начальных узлов
+
+    def append(self, value):
+        if not self.head:
+            self.head = Node(value)  # Если список пуст, новый узел становится головой
+        else:
+            current = self.head
+            while current.next:
+                current = current.next  # Проходимся по списку до последнего узла
+            current.next = Node(value)  # Создаем новый узел в конце списка
+        print(f"Добавлен элемент {value}")
+
+    def prepend(self, value):
+        new_head = Node(value)  # Создаем новый узел
+        new_head.next = self.head  # Новый узел указывает на текущую голову списка
+        self.head = new_head  # Новый узел становится новой головой списка
+        print(f"Элемент {value} добавлен в начало")
+
+    def insert(self, index, value):
+        if index == 0:
+            self.prepend(value)  # Если индекс 0, то вставляем элемент в начало
+            return
+        current = self.head
+        current_index = 0
+        while current and current_index < index - 1:
+            current = current.next  # Перемещаемся к нужной позиции перед вставляемым индексом
+            current_index += 1
+        if current:
+            new_node = Node(value)
+            new_node.next = current.next  # Новый узел указывает на узел после текущего
+            current.next = new_node  # Текущий узел теперь указывает на новый узел
+            print(f"Элемент {value} вставлен на позицию {index}")
+        else:
+            print("Индекс вне диапазона")
+
+    def remove(self, value):
+        current = self.head
+        if current and current.value == value:
+            self.head = current.next  # Если элемент находится в голове, просто удаляем его
+            print(f"Удален элемент из головы: {value}")
+            return
+        prev = None
+        while current and current.value != value:
+            prev = current
+            current = current.next  # Перемещаемся по списку в поисках узла для удаления
+        if prev and current:
+            prev.next = current.next  # Удаляем узел, переприсоединяя предыдущий узел к следующему
+            print(f"Элемент {value} удален")
+
+    def display(self):
+        current = self.head
+        values = []
+        while current:
+            values.append(current.value)  # Собираем значения всех узлов для вывода
+            current = current.next
+        print("Список:", values)
+
+    def __iter__(self):
+        self.current = self.head
+        return self
+
+    def __next__(self):
+        if self.current:
+            value = self.current.value
+            self.current = self.current.next  # Перемещаем итератор на следующий узел
+            return value
+        else:
+            raise StopIteration  # Заканчиваем итерацию, если узлы кончились
+
+
+
+# проверка
+
+
+linked_list = LinkedList()
+linked_list.append(1)
+linked_list.append(3)
+linked_list.display()  # Проверка содержимого списка
+
+linked_list.prepend(0)
+linked_list.display()  # Проверка содержимого списка после добавления в начало
+
+linked_list.insert(1, 2)
+linked_list.display()  # Проверка вставки по индексу
+
+linked_list.remove(2)
+linked_list.display()  # Проверка удаления элемента
+
+linked_list.insert(10, 5)  # Попытка вставки за пределы диапазона
+linked_list.display()  # Проверка списка
+
+# Проход по всему списку
+print("Полный обход:")
+for value in linked_list:
+    print(value)

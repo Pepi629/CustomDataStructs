@@ -1,0 +1,98 @@
+from collections import deque
+
+class Graph:
+    def __init__(self):
+        self.adjacency_list = {}
+
+    def add_vertex(self, vertex):
+        if vertex not in self.adjacency_list:
+            self.adjacency_list[vertex] = set()
+
+    def add_edge(self, vertex1, vertex2):
+        if vertex1 in self.adjacency_list and vertex2 in self.adjacency_list:
+            self.adjacency_list[vertex1].add(vertex2)
+            self.adjacency_list[vertex2].add(vertex1)
+
+    def remove_vertex(self, vertex):
+        if vertex in self.adjacency_list:
+            for adjacent in list(self.adjacency_list[vertex]):
+                self.remove_edge(vertex, adjacent)
+            del self.adjacency_list[vertex]
+
+    def remove_edge(self, vertex1, vertex2):
+        if vertex1 in self.adjacency_list and vertex2 in self.adjacency_list[vertex1]:
+            self.adjacency_list[vertex1].remove(vertex2)
+            self.adjacency_list[vertex2].remove(vertex1)
+
+    def get_vertices(self):
+        return list(self.adjacency_list.keys())
+
+    def get_edges(self):
+        return [(vertex, adjacent) for vertex in self.adjacency_list for adjacent in self.adjacency_list[vertex]]
+
+    def update_edge(self, vertex1, vertex2, new_vertex):
+        self.remove_edge(vertex1, vertex2)
+        self.add_edge(vertex1, new_vertex)
+
+    def bfs(self, start_vertex):
+        visited = set()
+        queue = deque([start_vertex])
+        while queue:
+            vertex = queue.popleft()
+            if vertex not in visited:
+                visited.add(vertex)
+                queue.extend(self.adjacency_list[vertex] - visited)
+        return list(visited)
+
+    def dfs(self, start_vertex, visited=None):
+        if visited is None:
+            visited = set()
+        visited.add(start_vertex)
+        for neighbour in self.adjacency_list[start_vertex]:
+            if neighbour not in visited:
+                self.dfs(neighbour, visited)
+        return list(visited)
+
+    def merge(self, other_graph):
+        for vertex in other_graph.get_vertices():
+            self.add_vertex(vertex)
+        for vertex1, vertex2 in other_graph.get_edges():
+            self.add_edge(vertex1, vertex2)
+
+    def search(self, key):
+        for vertex in self.adjacency_list:
+            if vertex == key:
+                return True
+            if key in self.adjacency_list[vertex]:
+                return True
+        return False
+
+    def sort_vertices(self):
+        return sorted(self.get_vertices(), key=lambda vertex: len(self.adjacency_list[vertex]), reverse=True)
+
+    def display(self):
+        for vertex in self.adjacency_list:
+            print(f"{vertex}: {sorted(self.adjacency_list[vertex])}")
+
+# Пример использования
+graph = Graph()
+for i in range(6):
+    graph.add_vertex(i)
+edges = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (0, 5)]
+for edge in edges:
+    graph.add_edge(*edge)
+
+graph.display()
+
+print("Обход BFS, начиная с вершины 0:", graph.bfs(0))
+print("Обход DFS, начиная с вершины 0:", graph.dfs(0))
+
+other_graph = Graph()
+other_graph.add_vertex(6)
+other_graph.add_edge(5, 6)
+graph.merge(other_graph)
+
+print("График после слияния:")
+graph.display()
+
+print("Сортировка вершин по степени:", graph.sort_vertices())

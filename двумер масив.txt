@@ -1,0 +1,88 @@
+class AdvancedMultiDimensionalArray:
+    def __init__(self, rows, cols, default_value=0):
+        # Инициализация двумерного массива заданным количеством строк и столбцов
+        self.array = [[default_value for _ in range(cols)] for _ in range(rows)]
+        self.rows = rows
+        self.cols = cols
+
+    def set_value(self, row, col, value):
+        if 0 <= row < self.rows and 0 <= col < self.cols:
+            self.array[row][col] = value
+
+    def get_value(self, row, col):
+        if 0 <= row < self.rows and 0 <= col < self.cols:
+            return self.array[row][col]
+        return None
+
+    def display(self):
+        for row in self.array:
+            print(row)
+
+    def add_row(self, new_row):
+        if len(new_row) == self.cols:
+            self.array.append(new_row)
+            self.rows += 1
+
+    def add_column(self, new_col):
+        if len(new_col) == self.rows:
+            for i in range(self.rows):
+                self.array[i].append(new_col[i])
+            self.cols += 1
+
+    def remove_row(self, row_index):
+        if 0 <= row_index < self.rows:
+            del self.array[row_index]
+            self.rows -= 1
+
+    def remove_column(self, col_index):
+        if 0 <= col_index < self.cols:
+            for row in self.array:
+                del row[col_index]
+            self.cols -= 1
+
+    def update_element(self, row, col, new_value):
+        if 0 <= row < self.rows and 0 <= col < self.cols:
+            self.array[row][col] = new_value
+
+    def merge(self, other):
+        if self.rows != other.rows or self.cols != other.cols:
+            raise ValueError("Both arrays must have the same dimensions")
+        for i in range(self.rows):
+            for j in range(self.cols):
+                self.array[i][j] += other.array[i][j]
+
+    def search(self, value):
+        for i, row in enumerate(self.array):
+            if value in row:
+                return (i, row.index(value))
+        return None
+
+    def sort_rows(self):
+        for row in self.array:
+            row.sort()
+
+# Пример использования класса AdvancedMultiDimensionalArray
+md_array = AdvancedMultiDimensionalArray(3, 3)
+md_array.set_value(0, 0, 5)
+md_array.set_value(1, 1, 10)
+new_row = [1, 2, 3]
+md_array.add_row(new_row)
+new_col = [0, 0, 0, 0]
+md_array.add_column(new_col)
+
+print("Исходный массив:")
+md_array.display()
+
+md_array.update_element(0, 0, 7)
+print("Массив после обновления элемента:")
+md_array.display()
+
+other_array = AdvancedMultiDimensionalArray(4, 4, default_value=1)
+md_array.merge(other_array)
+print("Массив после слияния:")
+md_array.display()
+
+print("Поиск значения 10:", md_array.search(10))
+md_array.sort_rows()
+print("Массив после сортировки строк:")
+md_array.display()

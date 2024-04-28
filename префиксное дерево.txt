@@ -1,0 +1,80 @@
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end_of_word = False
+
+    def insert(self, word):
+        current = self
+        for char in word:
+            if char not in current.children:
+                current.children[char] = TrieNode()
+            current = current.children[char]
+        current.is_end_of_word = True
+
+    def delete(self, word):
+        def _delete(current, word, depth):
+            if depth == len(word):
+                if current.is_end_of_word:
+                    current.is_end_of_word = False
+                return len(current.children) == 0
+            char = word[depth]
+            if char not in current.children:
+                return False
+            can_delete = _delete(current.children[char], word, depth + 1)
+            if can_delete:
+                del current.children[char]
+                return len(current.children) == 0
+            return False
+        _delete(self, word, 0)
+
+    def update(self, old_word, new_word):
+        self.delete(old_word)
+        self.insert(new_word)
+
+    def search(self, word):
+        current = self
+        for char in word:
+            if char not in current.children:
+                return False
+            current = current.children[char]
+        return current.is_end_of_word
+
+    def traverse(self):
+        results = []
+        self._traverse_helper('', self, results)
+        return results
+
+    def _traverse_helper(self, prefix, node, results):
+        if node.is_end_of_word:
+            results.append(prefix)
+        for char, next_node in node.children.items():
+            self._traverse_helper(prefix + char, next_node, results)
+
+    def search_prefix(self, prefix):
+        results = []
+        current = self
+        for char in prefix:
+            if char not in current.children:
+                return []
+            current = current.children[char]
+        self._traverse_helper(prefix, current, results)
+        return results
+
+    def count_words(self):
+        count = 1 if self.is_end_of_word else 0
+        for child in self.children.values():
+            count += child.count_words()
+        return count
+
+# Пример использования префиксного дерева с новыми функциями
+trie = TrieNode()
+trie.insert("hello")
+trie.insert("helium")
+trie.update("hello", "hell")
+trie.delete("helium")
+
+print("Слова в дереве:", trie.traverse())
+print("Слов 'hell':", trie.search("hell"))
+print("Слов 'helium':", trie.search("helium"))
+print("Слова, начинающиеся с 'he':", trie.search_prefix("he"))
+print("Количество слов в дереве:", trie.count_words())
